@@ -16,7 +16,7 @@ class API(object):
 
     def __init__(self, auth_handler=None,
             host='api.twitter.com', search_host='search.twitter.com',
-             cache=None, secure=False, api_root='/1', search_root='',
+             cache=None, secure=False, api_root='/1.1', search_root='',
             retry_count=0, retry_delay=0, retry_errors=None,
             parser=None):
         self.auth = auth_handler
@@ -85,7 +85,7 @@ class API(object):
         payload_type = 'relation', payload_list = True,
         allowed_param = ['id'],
         require_auth = False
-	)
+    )
 
     """/statuses/:id/retweeted_by/ids.format"""
     retweeted_by_ids = bind_api(
@@ -282,7 +282,7 @@ class API(object):
 
     """ Perform bulk look up of friendships from user ID or screenname """
     def lookup_friendships(self, user_ids=None, screen_names=None):
-	    return self._lookup_friendships(list_to_csv(user_ids), list_to_csv(screen_names))
+        return self._lookup_friendships(list_to_csv(user_ids), list_to_csv(screen_names))
 
     _lookup_friendships = bind_api(
         path = '/friendships/lookup.json',
@@ -670,10 +670,11 @@ class API(object):
 
     """ search """
     search = bind_api(
-        search_api = True,
-        path = '/search.json',
-        payload_type = 'search_result', payload_list = True,
-        allowed_param = ['q', 'lang', 'locale', 'rpp', 'page', 'since_id', 'geocode', 'show_user', 'max_id', 'since', 'until', 'result_type']
+        search_api = False,
+        path = '/search/tweets.json',
+        payload_type = 'json',
+        require_auth = True,
+        allowed_param = ['q', 'geocode','lang','locale','result_type','count', 'until','since_id','max_id','include_entities','callback']
     )
     search.pagination_mode = 'page'
 
@@ -773,4 +774,3 @@ class API(object):
         }
 
         return headers, body
-
