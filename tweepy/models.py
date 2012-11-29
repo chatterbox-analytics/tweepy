@@ -2,6 +2,7 @@
 # Copyright 2009-2010 Joshua Roesslein
 # See LICENSE for details.
 
+import json
 from tweepy.error import TweepError
 from tweepy.utils import parse_datetime, parse_html_value, parse_a_href, \
         parse_search_datetime, unescape_html
@@ -43,7 +44,7 @@ class Model(object):
 class Status(Model):
 
     @classmethod
-    def parse(cls, api, json):
+    def first_parse(cls, api, json):
         status = cls(api)
         for k, v in json.items():
             if k == 'user':
@@ -64,6 +65,12 @@ class Status(Model):
                 setattr(status, k, Status.parse(api, v))
             else:
                 setattr(status, k, v)
+        return status
+
+    @classmethod
+    def parse(cls, api, raw):
+        status = cls.first_parse(api, raw)
+        setattr(status, 'json', json.dumps(raw))
         return status
 
     def destroy(self):
